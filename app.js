@@ -13,6 +13,8 @@ app.use(cors(
 
     }
 ))
+
+
 const jwt = require('jsonwebtoken')
 const secretKey = 'secrect123'
 
@@ -210,7 +212,16 @@ app.post('/user',async (req,res)=>{
 
     }
 })
-
+app.post('/signup', async (req, res) => {
+    const { email, password, name } = req.body;
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+  
+    const newUser = new User({ email, password: hashedPassword, name });
+    await newUser.save();
+  
+    res.status(201).json({ message: 'User created successfully' });
+  });
 app.listen(port, (err) => {
     if (err) {
         console.log(`Error starting the server: ${err}`);
